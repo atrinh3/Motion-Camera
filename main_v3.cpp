@@ -110,13 +110,18 @@ void getImage(*options)
         cmd[0] = "raspistill";
         cmd[count + 1] = "-n";
         cmd[count + 2] = "-o temp.jpg";
-        //cmd[count + 4] = "-w " + width + " -h " + height;
         cmd[count + 3] = (char *)0;
         execv("/usr/bin/raspistill", cmd);
     }    
 }
 
 
+/*
+This function will create the differential image that will be used to scan
+for motion.  In order to conserve storage space, the output will be saved 
+in place of the compare image.  This can be done because the compare image
+will be refreshed anyways soon after this operation is performed.
+*/
 void getDifference(*reference, *compare)
 {
     if (DEBUG)
@@ -141,6 +146,15 @@ void filterBlobs(*blobVector)
     }
 }
 
+/*
+Determines whether or not there's motion detected.  Uses the Blob class to
+group detected changes in the pictures together.  Changes will be determined
+by iterating through every pixel in the differential image to check if it
+is over a set threshold.  Blobs that are very small will be filtered out,
+leaving larger objects like cars, people, animals behind. If by the end of 
+this function, the blob vector is empty, then there were no significant
+changes detected in the differential image.
+*/
 bool motion(*imageDifference)
 {
     std::vector<Blob> blobs;
@@ -200,17 +214,26 @@ void streamVideo(recordDuration)
 
 int main(void)
 {
+    /*
+    Initiate variables and parameters.
+    Timer information will be used to determine when to obtain a new reference
+    picture or a new compare image.
+    The remaining parameters dictate the characteristics of the image obtained
+    using the raspistill cmd.
+    */
     timer_t timer;
     updateTime = 600;    // seconds (10 min)
-    if(DEBUG)
-    {
-        updateTime = 30;
-    }
     senseTime  = 2;      // seconds
     width      = WIDTH;
     height     = HEIGHT;
     lowPower   = false;
-    options = "-vf -hf -t 1000 -q 5";   
+    options = "-vf -hf -t 1000 -q 5 -n";
+    if (DEBUG)
+    {
+        updateTime = 30;
+        options = "-vf -hf -t 1000 -q 5";
+    }
+    
     
     IplImage* reference, compare;
     //refBuffer  = (int*)malloc(width*height*sizeof(int));
@@ -261,6 +284,8 @@ int main(void)
             while(!lowPower)
             {
                 videoStream(10);
+                sleep(10 * 1000);
+                lowPower = true;
             }
         }
     }
