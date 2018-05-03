@@ -7,6 +7,7 @@
 #include <sys/wait.h>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
+#include "Blob.h"
 
 #define GRAYSCALE_THRESHOLD 50
 #define DISTANCE_THRESHOLD 100
@@ -180,7 +181,6 @@ int main(void)
         updateTime = 30;
         options = "-vf -hf -t 1000 -q 5";
     }
-    
     
     IplImage* reference, compare;
     
