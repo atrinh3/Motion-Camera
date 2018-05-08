@@ -75,103 +75,12 @@ int main(void)
     
     IplImage* one, two;
     
-    
     startTime = timer;
-    options = "-vf -hf -t 1000 -q 5 -n";
-    getImage(options, "q5 v1");
-    sleep(interval * 1000);
-    one = cvLoadImage("q5 v1.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-    getImage(options, "q5 v2");
-    sleep(interval * 1000);
-    two = cvLoadImage("q5 v2.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-    testTime = difftime(timer, startTime);
-    printf("With q = 5, it takes %f seconds to do image subtraction.\n", testTime);
-    
-    startTime = timer;
-    options = "-vf -hf -t 1000 -q 10 -n";
-    getImage(options, "q10 v1");
-    sleep(interval * 1000);
-    one = cvLoadImage("q10 v1.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-    getImage(options, "q10 v2");
-    sleep(interval * 1000);
-    two = cvLoadImage("q10 v2.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-    testTime = difftime(timer, startTime);
-    printf("With q = 10, it takes %f seconds to do image subtraction.\n");
-    
-    startTime = timer;
-    options = "-vf -hf -t 1000 -q 20 -n";
-    getImage(options, "q20 v1");
-    sleep(interval * 1000);
-    one = cvLoadImage("q20 v1.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-    getImage(options, "q20 v2");
-    sleep(interval * 1000);
-    two = cvLoadImage("q20 v2.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-    testTime = difftime(timer, startTime);
-    printf("With q = 20, it takes %f seconds to do image subtraction.\n", testTime);
-    
-    startTime = timer;
-    options = "-vf -hf -t 1000 -q 30 -n";
-    getImage(options, "q30 v1");
-    sleep(interval * 1000);
-    one = cvLoadImage("q30 v1.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-    getImage(options, "q30 v2");
-    sleep(interval * 1000);
-    two = cvLoadImage("q30 v2.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-    testTime = difftime(timer, startTime);
-    
-    startTime = timer;
-    options = "-vf -hf -t 1000 -q 40 -n";
-    getImage(options, "q40 v1");
-    sleep(interval * 1000);
-    one = cvLoadImage("q40 v1.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-    getImage(options, "q40 v2");
-    sleep(interval * 1000);
-    two = cvLoadImage("q40 v2.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-    testTime = difftime(timer, startTime);
-    
-    
-    startTime = timer;
-    while(lowPower)
-    {
-        sleep(senseTime * 1000);
-        // if enough time has elapsed since the reference image,
-        // it is time to update the reference image.
-        if(difftime(timer, startTime) >= updateTime)
-        {
-            // restart the reference timer and get a new reference image.
-            startTime = timer;
-            getImage(options);
-            sleep(1000);
-            reference = cvLoadImage("temp.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-            if(DEBUG)
-            {
-                printf("Resetting reference background picture.\n");
-            }
-            sleep(senseTime * 1000);
-        }
-        getImage(options);
-        sleep(1000);
-        compare = cvLoadImage("temp.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-        if(DEBUG)
-        {
-            printf("Getting updated picture to check for movement.\n");
-            elapsedTime = difftime(timer, startTime);
-            printf("Elapsed time from ref picture = " + elapsedTime + " s.\n");
-        }
-        getDifference(&reference, &compare);
-        if(motion(&compare))
-        {
-            lowPower = false;
-            while(!lowPower)
-            {
-                videoStream(10);
-                sleep(10 * 1000);
-                lowPower = true;
-            }
-        }
+    testOptions("-vf -hf -t 1000 -q 5 -n", timer, &one, &two);
+    testOptions("-vf -hf -t 1000 -q 10 -n", timer, &one, &two);
+    testOptions("-vf -hf -t 1000 -q 20 -n", timer, &one, &two);
+    testOptions("-vf -hf -t 1000 -q 30 -n", timer, &one, &two);
+    testOptions("-vf -hf -t 1000 -q 40 -n", timer, &one, &two);
     }
 }
-
-
-
 
