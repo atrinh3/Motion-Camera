@@ -1,6 +1,16 @@
 // camera test
 // take several pictures of varying quality and sizes to see which
 // works the best for motion detection.
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <bcm2835.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+
 void getImage(*options, name)
 {
     if ((pid = fork()) == 0)
